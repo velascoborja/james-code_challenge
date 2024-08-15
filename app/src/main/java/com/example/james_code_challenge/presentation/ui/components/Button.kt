@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 @Preview(showBackground = true)
-fun FavouriteButton() { // Pass in favourited items
+fun FavouriteButton() {
     val itemId = "JIMMY" // TODO use local list which observes DB
     val selectedItems = remember { mutableStateListOf<String>() }
     val isSelected = selectedItems.contains(itemId) // Check if item is selected
@@ -36,7 +36,6 @@ fun FavouriteButton() { // Pass in favourited items
             }
         },
         modifier = Modifier.size(32.dp)
-//        , modifier = Modifier.padding(0.dp) // Remove padding // DOESNT DO ANYTHTIN
     ) {
         Icon(
             imageVector = Icons.Filled.Star,

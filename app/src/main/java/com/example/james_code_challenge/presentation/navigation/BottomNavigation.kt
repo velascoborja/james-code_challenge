@@ -13,20 +13,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.example.james_code_challenge.Constants.Companion.FAVOURITES_SCREEN
 import com.example.james_code_challenge.Constants.Companion.PROCEDURES_SCREEN
+import com.example.james_code_challenge.R
 
 @Composable
 fun BottomNavigation(navController: NavController) {
     val items = listOf(
         BottomNavItem(
-            name = "Procedures", // TODO Rename & extract to String on fresh commit when ready
+            name = stringResource(R.string.procedures_tab_name),
             route = PROCEDURES_SCREEN,
             icon = Icons.Default.Home
         ),
         BottomNavItem(
-            name = "Favourites",
+            name = stringResource(R.string.favourites_tab_name),
             route = FAVOURITES_SCREEN,
             icon = Icons.Default.Star
         )

@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">james-code_challenge</string>
+
+    <string name="generic_error_message">Something went wrong, please try again later</string>
+
+    <string name="procedures_tab_name">Procedures</string>
+    <string name="favourites_tab_name">Favourites</string>
 </resources>

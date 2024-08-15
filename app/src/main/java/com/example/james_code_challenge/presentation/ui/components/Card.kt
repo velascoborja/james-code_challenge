@@ -18,10 +18,12 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.james_code_challenge.R
+import com.example.james_code_challenge.data.model.Procedure
 import com.example.james_code_challenge.presentation.ui.components.button.FavouriteButton
+import com.example.james_code_challenge.mock.MockData
 
 @Composable
-fun ProcedureDetailCard(title: String) {
+fun ProcedureDetailCard(procedure: Procedure) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -38,7 +40,7 @@ fun ProcedureDetailCard(title: String) {
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data("https://example.com/image.jpg")
+                        .data(procedure.icon.url)
                         .build(),
                     placeholder = painterResource(R.drawable.ic_launcher_foreground),
                     contentDescription = "Image",
@@ -50,15 +52,22 @@ fun ProcedureDetailCard(title: String) {
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = title,
+                        text = procedure.name,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = 10.dp)
                     )
-                    Text(text = "Phase Count: $title")
+                    Text(text = "Phase Count: ${procedure.phases.size}")
                 }
 
                 FavouriteButton()
             }
         }
     }
+}
+
+
+@Composable
+@Preview()
+fun ProcedureDetailCardPreview() {
+    ProcedureDetailCard(MockData.procedureMock)
 }
