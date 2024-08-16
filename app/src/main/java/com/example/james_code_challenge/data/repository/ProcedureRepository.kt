@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import com.example.james_code_challenge.util.Result
+import com.example.james_code_challenge.data.model.ProcedureDetail
 import kotlin.coroutines.cancellation.CancellationException
 
 class ProcedureRepositoryImpl @Inject constructor(
@@ -28,8 +29,25 @@ class ProcedureRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getProcedureDetail(procedureId: String): Flow<Result<ProcedureDetail>> = flow {
+        try {
+            val response = procedureApi.getProcedureDetail(procedureId)
+            if (response.isSuccessful) {
+                emit(Result.Success(response.body()!!)) // NPEs are caught // TODO
+            } else {
+                emit(Result.Error(Throwable("API Error: ${response.code()}. ${response.errorBody()}")))
+            }
+        } catch (e: Exception) {
+            if(e is CancellationException) { // TODO find workaround
+                throw e
+            }
+            emit(Result.Error(e))
+        }
+    }
+
 }
 
 interface ProcedureRepository {
     suspend fun getProcedureList(): Flow<Result<List<Procedure>>>
+    suspend fun getProcedureDetail(procedureId: String): Flow<Result<ProcedureDetail>>
 }

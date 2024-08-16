@@ -1,9 +1,10 @@
 package com.example.james_code_challenge.services.api
 
 import com.example.james_code_challenge.data.model.Procedure
-import com.example.recipeextractor.data.model.ProcedureDetail
+import com.example.james_code_challenge.data.model.ProcedureDetail
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Path
 import javax.inject.Inject
 
 class ProcedureApi @Inject constructor(): ProcedureService {
@@ -14,16 +15,20 @@ class ProcedureApi @Inject constructor(): ProcedureService {
         return baseApi.procedureApi.getProcedureList()
     }
 
-    override suspend fun getProcedureDetails(): Response<ProcedureDetail> {
-        return baseApi.procedureApi.getProcedureDetails()
+    override suspend fun getProcedureDetail(procedureId: String): Response<ProcedureDetail> {
+        return baseApi.procedureApi.getProcedureDetail(procedureId)
     }
 
 }
 
 interface ProcedureService {
+
     @GET("procedures")
     suspend fun getProcedureList() : Response<List<Procedure>>
 
-//    @GET(procedures/$PROCEDURE_ID)
-    suspend fun getProcedureDetails() : Response<ProcedureDetail>
+    @GET("procedures/{procedureId}")
+    suspend fun getProcedureDetail(
+        @Path("procedureId") procedureId: String
+    ): Response<ProcedureDetail>
+
 }

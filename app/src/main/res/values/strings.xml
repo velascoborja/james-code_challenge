@@ -5,4 +5,8 @@
 
     <string name="procedures_tab_name">Procedures</string>
     <string name="favourites_tab_name">Favourites</string>
+
+    <string name="total_duration">Total duration: %s minutes</string>
+    <string name="creation_date">Creation date: %s</string>
+
 </resources>

@@ -3,6 +3,7 @@ package com.example.james_code_challenge.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.james_code_challenge.data.model.Procedure
+import com.example.james_code_challenge.data.model.ProcedureDetail
 import com.example.james_code_challenge.domain.usecase.ProcedureUsecase
 import com.example.james_code_challenge.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -49,11 +50,34 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun fetchProcedureDetail(procedureId: String) {
+        viewModelScope.launch {
+            procedureUsecase.getProcedureDetail(procedureId).collect {
+                when (it) {
+                    is Result.Success -> onProcedureDetailSuccess(it.data)
+                    is Result.Error -> onFailure(it.exception)
+                }
+            }
+        }
+    }
+
+    private fun onProcedureDetailSuccess(procedureDetail: ProcedureDetail) {
+        viewModelScope.launch {
+            _uiState.emit(
+                _uiState.value.copy(
+                    isLoading = false,
+                    selectedProcedureDetail = procedureDetail
+                )
+            )
+        }
+    }
+
     data class ProceduresListState(
         val isLoading: Boolean = false,
         val items: List<Procedure> = emptyList(),
         val error: String? = null, // Would use an ErrorType on actual app
-        val favouriteItems: List<Procedure> = emptyList()
+        val favouriteItems: List<Procedure> = emptyList(),
+        var selectedProcedureDetail: ProcedureDetail? = null
     )
 
 }

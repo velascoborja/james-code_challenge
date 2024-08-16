@@ -77,7 +77,7 @@ class ProcedureRepositoryImplTest {
         val exception = Throwable("Network Error")
         coEvery { procedureApiMock.getProcedureList() } throws exception
 
-        val result = procedureRepository.getProcedureList().first() // TODO SEE NULL CHECK
+        val result = procedureRepository.getProcedureList().first()
 
         assert(result is Result.Error)
         val errorResult = result as Result.Error

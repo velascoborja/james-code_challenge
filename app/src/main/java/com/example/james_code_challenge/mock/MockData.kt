@@ -1,7 +1,10 @@
 package com.example.james_code_challenge.mock
 
+import com.example.james_code_challenge.data.model.Card
 import com.example.james_code_challenge.data.model.Icon
+import com.example.james_code_challenge.data.model.Phase
 import com.example.james_code_challenge.data.model.Procedure
+import com.example.james_code_challenge.data.model.ProcedureDetail
 
 class MockData {
     companion object {
@@ -24,6 +27,16 @@ class MockData {
             siteSlug = "hand-transplant",
             duration = 4651,
             isPurchasable = false
+        )
+
+        val procedureDetailMock = ProcedureDetail(
+            uuid = "uuid",
+            name = "name",
+            phases = listOf(Phase("", "", Icon("", "", 99))),
+            icon = Icon("", "", 99),
+            card = Card("", "", 99),
+            "2015-06-04T17:13:48.440",
+            999
         )
     }
 }

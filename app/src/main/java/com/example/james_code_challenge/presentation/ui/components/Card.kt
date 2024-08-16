@@ -1,5 +1,6 @@
 package com.example.james_code_challenge.presentation.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -23,10 +27,20 @@ import com.example.james_code_challenge.presentation.ui.components.button.Favour
 import com.example.james_code_challenge.mock.MockData
 
 @Composable
-fun ProcedureDetailCard(procedure: Procedure) {
+fun ProcedureDetailCard(
+    procedure: Procedure,
+    onClickEvent: () -> Unit
+) {
     Card(
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 6.dp
+        ),
         modifier = Modifier
             .fillMaxWidth()
+            .padding(5.dp)
+            .clickable {
+                onClickEvent()
+            }
     ) {
         Row(
             modifier = Modifier
@@ -49,7 +63,9 @@ fun ProcedureDetailCard(procedure: Procedure) {
                 )
 
                 Column(
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 5.dp)
                 ) {
                     Text(
                         text = procedure.name,
@@ -69,5 +85,5 @@ fun ProcedureDetailCard(procedure: Procedure) {
 @Composable
 @Preview()
 fun ProcedureDetailCardPreview() {
-    ProcedureDetailCard(MockData.procedureMock)
+    ProcedureDetailCard(MockData.procedureMock, onClickEvent = {})
 }

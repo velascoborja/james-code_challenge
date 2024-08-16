@@ -1,6 +1,6 @@
-package com.example.recipeextractor.data.model
+package com.example.james_code_challenge.data.model
 
-import com.example.james_code_challenge.data.model.Icon
+import com.google.gson.annotations.SerializedName
 
 data class ProcedureDetail(
     val uuid: String,
@@ -8,33 +8,14 @@ data class ProcedureDetail(
     val phases: List<Phase>,
     val icon: Icon,
     val card: Card,
-    val specialties: List<String>,
-    val labels: List<String>,
-    val channel: Channel,
-    val overview: List<Int>,
-    val devices: List<String>,
-    val deepLink: String,
-    val viewCount: Int,
-    val author: String,
-    val organisation: String,
-    val doiCode: String,
-    val datePublished: String,
+    @SerializedName("date_published") val datePublished: String,
     val duration: Int,
-    val productIds: Map<String, String>,
-    val isPurchasable: Boolean,
-    val productInfoUrl: String?,
-    val cpdCredits: String?
 )
 
 data class Phase(
     val uuid: String,
     val name: String,
-    val icon: Icon,
-    val deepLink: String,
-    val testMode: Boolean,
-    val maxUserScore: Any?, // This can be null so marked as nullable
-    val viewed: Boolean,
-    val learnCompleted: Boolean
+    val icon: Icon
 )
 
 data class Card(

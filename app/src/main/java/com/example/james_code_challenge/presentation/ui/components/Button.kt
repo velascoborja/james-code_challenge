@@ -34,13 +34,13 @@ fun FavouriteButton() {
             } else {
                 selectedItems.remove(itemId)
             }
-        },
-        modifier = Modifier.size(32.dp)
+        }
     ) {
         Icon(
             imageVector = Icons.Filled.Star,
             contentDescription = "Favourite button",
-            tint = colour
+            tint = colour,
+            modifier = Modifier.size(32.dp)
         )
     }
 }

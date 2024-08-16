@@ -11,9 +11,9 @@ data class Procedure(
     @SerializedName("deep_link") val deepLink: String,
     val author: String,
     val organisation: String,
-    @SerializedName("doi_code") val doiCode: String, // Consider using nullable type (String?) if code might be missing
-    @SerializedName("date_published") val datePublished: String, // Consider using a Date or LocalDate type for better handling
-    val labels: List<String>, // Consider using an empty list by default if labels might be missing (emptyList<String>())
+    @SerializedName("doi_code") val doiCode: String,
+    @SerializedName("date_published") val datePublished: String,
+    val labels: List<String>,
     @SerializedName("site_slug") val siteSlug: String,
     val duration: Int,
     @SerializedName("is_purchasable") val isPurchasable: Boolean
