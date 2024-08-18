@@ -1,7 +1,7 @@
 package com.example.james_code_challenge.data.repository
 
-import com.example.james_code_challenge.mock.MockData
 import com.example.james_code_challenge.data.model.Procedure
+import com.example.james_code_challenge.mock.MockData
 import com.example.james_code_challenge.services.api.ProcedureApi
 import com.example.james_code_challenge.util.Result
 import io.mockk.coEvery
@@ -9,13 +9,14 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody.Companion.toResponseBody
+import okio.IOException
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import retrofit2.HttpException
 import retrofit2.Response
-import java.net.HttpURLConnection.HTTP_BAD_REQUEST
+import java.net.HttpURLConnection.HTTP_INTERNAL_ERROR
 
 class ProcedureRepositoryImplTest {
 
@@ -25,12 +26,12 @@ class ProcedureRepositoryImplTest {
     private val mockProcedure = MockData.procedureMock
 
     @Before
-    fun setUp() {
+    fun setup() {
         procedureRepository = ProcedureRepositoryImpl(procedureApiMock)
     }
 
     @Test
-    fun `getProcedureList returns Success when API call is successful`() = runBlocking {
+    fun `GIVEN getProcedureList() THEN returns Success when API call is successful`() = runBlocking {
         // given
         val mockList = listOf(mockProcedure, mockProcedure.copy(uuid="uuid"))
         coEvery { procedureApiMock.getProcedureList() } returns Response.success(mockList)
@@ -45,10 +46,9 @@ class ProcedureRepositoryImplTest {
     }
 
     @Test
-    fun `getProcedureList returns Error when API call fails with HTTP error code`() = runBlocking {
+    fun `GIVEN getProcedureList() THEN returns Error when API call fails with HTTP error code`() = runBlocking {
         // given
-
-        coEvery { procedureApiMock.getProcedureList() } throws HttpException(Response.error<List<Procedure>>(HTTP_BAD_REQUEST, "".toResponseBody()))
+        coEvery { procedureApiMock.getProcedureList() } throws HttpException(Response.error<List<Procedure>>(HTTP_INTERNAL_ERROR, "".toResponseBody()))
 
         // when
         val result = procedureRepository.getProcedureList().first()
@@ -56,31 +56,37 @@ class ProcedureRepositoryImplTest {
         // then
         assert(result is Result.Error)
         val errorResult = result as Result.Error
-        val isCorrectErrorCode = errorResult.exception.message?.contains(HTTP_BAD_REQUEST.toString())
+        val isCorrectErrorCode = errorResult.exception.message?.contains(HTTP_INTERNAL_ERROR.toString())
         assertTrue(isCorrectErrorCode!!)
     }
 
     @Test
-    fun `getProcedureList returns Error when API call throws an exception`() = runBlocking {
-        val exception = Throwable("Network Error")
-        coEvery { procedureApiMock.getProcedureList() } throws exception
+    fun `GIVEN getProcedureList() returns Error when API call throws an exception`() = runBlocking {
+        // given
+        val expectedException = IOException("Test IOException")
+        coEvery { procedureApiMock.getProcedureList() } throws expectedException
 
+        // when
         val result = procedureRepository.getProcedureList().first()
 
+        // then
         assert(result is Result.Error)
         val errorResult = result as Result.Error
-        assert(errorResult.exception == exception)
+        assert(errorResult.exception == expectedException)
     }
 
     @Test
-    fun `getProcedureList returns Error when API call as Result is null`() = runBlocking {
-        val exception = Throwable("Network Error")
-        coEvery { procedureApiMock.getProcedureList() } throws exception
+    fun `GIVEN getProcedureList() THEN returns Error when API call as Result is null`() = runBlocking {
+        // given
+        coEvery { procedureApiMock.getProcedureList() } returns Response.success(null)
 
+        // when
         val result = procedureRepository.getProcedureList().first()
 
+        // then
         assert(result is Result.Error)
-        val errorResult = result as Result.Error
-        assert(errorResult.exception == exception)
     }
+
+    // Skipping tests for getProcedureDetail(), hopefully above demonstrates how I write tests for this kind of logic
+
 }

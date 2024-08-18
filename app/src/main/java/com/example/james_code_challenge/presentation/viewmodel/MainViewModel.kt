@@ -32,7 +32,7 @@ class MainViewModel @Inject constructor(
             procedureUsecase.getProcedureList().collect {
                 when (it) {
                     is Result.Success -> onProcedureListSuccess(it.data)
-                    is Result.Error -> onFailure(it.exception)
+                    is Result.Error -> onProcedureListFailure(it.exception)
                 }
             }
         }
@@ -44,7 +44,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun onFailure(exception: Throwable) {
+    private fun onProcedureListFailure(exception: Throwable) {
         viewModelScope.launch {
             _uiState.emit(_uiState.value.copy(isLoading = false, error = exception.toString()))
         }
@@ -55,7 +55,7 @@ class MainViewModel @Inject constructor(
             procedureUsecase.getProcedureDetail(procedureId).collect {
                 when (it) {
                     is Result.Success -> onProcedureDetailSuccess(it.data)
-                    is Result.Error -> onFailure(it.exception)
+                    is Result.Error -> onProcedureDetailFailure()
                 }
             }
         }
@@ -69,6 +69,12 @@ class MainViewModel @Inject constructor(
                     selectedProcedureDetail = procedureDetail
                 )
             )
+        }
+    }
+
+    private fun onProcedureDetailFailure() {
+        viewModelScope.launch {
+            _uiState.emit(_uiState.value.copy(isLoading = false, selectedProcedureDetail = null))
         }
     }
 
