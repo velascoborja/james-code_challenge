@@ -22,7 +22,6 @@ class ProcedureUsecaseImplTest {
 
     @Before
     fun setup() {
-//        MockKAnnotations.init(this)
         usecase = ProcedureUsecaseImpl(procedureRepoMock)
     }
 

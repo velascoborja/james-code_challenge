@@ -11,6 +11,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -22,10 +23,10 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.james_code_challenge.R
+import com.example.james_code_challenge.data.model.FavouriteItem
 import com.example.james_code_challenge.data.model.Procedure
 import com.example.james_code_challenge.mock.MockData
 import com.example.james_code_challenge.presentation.ui.components.Card.Companion.IMAGE_CONTENT_DESCRIPTION
-import com.example.james_code_challenge.presentation.ui.components.button.FavouriteButton
 
 class Card {
     companion object {
@@ -37,8 +38,13 @@ class Card {
 fun ProcedureDetailCard(
     modifier: Modifier = Modifier,
     procedure: Procedure,
-    onClickEvent: () -> Unit
+    favouritesList: List<Procedure>,
+    onCardClickEvent: () -> Unit,
+    onFavouriteToggleEvent: (FavouriteItem) -> Unit,
+    isFavourite: (String) -> Boolean
 ) {
+    LaunchedEffect(favouritesList) {} // Trigger recomposition when favourites change
+
     Card(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
@@ -47,7 +53,7 @@ fun ProcedureDetailCard(
             .fillMaxWidth()
             .padding(5.dp)
             .clickable {
-                onClickEvent()
+                onCardClickEvent() // Trigger bottomsheet
             }
     ) {
         Row(
@@ -62,10 +68,10 @@ fun ProcedureDetailCard(
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(procedure.icon.url)
+                        .data(procedure.icon.iconUrl)
                         .build(),
                     placeholder = painterResource(R.drawable.ic_launcher_foreground),
-                    contentDescription = "Image",
+                    contentDescription = null,
                     modifier = modifier
                         .size(120.dp)
                         .semantics {
@@ -86,7 +92,14 @@ fun ProcedureDetailCard(
                     Text(text = "Phase Count: ${procedure.phases.size}")
                 }
 
-                FavouriteButton()
+                FavouriteButton(
+                    onClickEvent = {
+                        onFavouriteToggleEvent(FavouriteItem(procedure.uuid, procedure))
+                    },
+                    currentItemUuid = procedure.uuid,
+                    favouritesList = favouritesList,
+                    isFavourite = { isFavourite(procedure.uuid) }
+                )
             }
         }
     }
@@ -96,5 +109,11 @@ fun ProcedureDetailCard(
 @Composable
 @Preview()
 fun ProcedureDetailCardPreview() {
-    ProcedureDetailCard(procedure = MockData.procedureMock, onClickEvent = {})
+    ProcedureDetailCard(
+        procedure = MockData.procedureMock,
+        onCardClickEvent = {},
+        onFavouriteToggleEvent = {},
+        favouritesList = listOf(MockData.procedureMock),
+        isFavourite = { true }
+    )
 }

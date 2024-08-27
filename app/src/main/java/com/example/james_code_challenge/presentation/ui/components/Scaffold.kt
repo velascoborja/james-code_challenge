@@ -17,7 +17,7 @@ import com.example.james_code_challenge.presentation.navigation.BottomNavigation
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ProceduresScaffold(
-    procedureListScreen: @Composable () -> Unit,
+    procedureScreen: @Composable () -> Unit,
     favouritesScreen: @Composable () -> Unit
 ) {
     val navController = rememberNavController()
@@ -34,7 +34,7 @@ fun ProceduresScaffold(
                     testTagsAsResourceId = true
                 }
         ) {
-            composable(route = PROCEDURES_SCREEN) { procedureListScreen() }
+            composable(route = PROCEDURES_SCREEN) { procedureScreen() }
             composable(route = FAVOURITES_SCREEN) { favouritesScreen() }
         }
     }

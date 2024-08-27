@@ -23,13 +23,3 @@ data class Card(
     val url: String,
     val version: Int
 )
-
-data class Channel(
-    val banner: Banner
-)
-
-data class Banner(
-    val uuid: String,
-    val url: String,
-    val version: Int
-)

@@ -7,10 +7,10 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.example.james_code_challenge.mock.MockData
-import com.example.james_code_challenge.presentation.ui.FavouritesScreen
 import com.example.james_code_challenge.presentation.ui.MainActivity.Companion.FAVOURITES_TEST_TAG
 import com.example.james_code_challenge.presentation.ui.MainActivity.Companion.PROCEDURE_LIST_TEST_TAG
-import com.example.james_code_challenge.presentation.ui.ProceduresListScreen
+import com.example.james_code_challenge.presentation.ui.screens.FavouritesScreen
+import com.example.james_code_challenge.presentation.ui.screens.ProceduresScreen
 import com.example.james_code_challenge.presentation.viewmodel.MainViewModel
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Rule
@@ -29,13 +29,28 @@ class ScaffoldKtTest {
         composeTestRule.setContent {
             ProceduresScaffold(
                 {
-                    ProceduresListScreen(
-                        uiState = MainViewModel.ProceduresListState(items = listOf(MockData.procedureMock)),
-                        fetchProcedureDetailEvent = { }
+                    ProceduresScreen(
+                        uiState = MainViewModel.ProceduresState(items = listOf(MockData.procedureMock)),
+                        fetchProcedureDetailEvent = {},
+                        onFavouriteToggleEvent = {},
+                        fetchProceduresList = {},
+                        fetchFavourites = {},
+                        isFavourite = { true }
                     )
                 },
                 {
-                    FavouritesScreen(procedures = listOf(MockData.procedureMock))
+                    FavouritesScreen(
+                        uiState = MainViewModel.FavouritesState(
+                            listOf(
+                                MockData.procedureMock,
+                                MockData.procedureMock.copy(uuid = "1")
+                            )
+                        ),
+                        onFavouriteToggleEvent = {},
+                        fetchFavourites = {},
+                        onFetchProcedureDetailEvent = {},
+                        isFavourite = { true }
+                    )
                 }
             )
         }

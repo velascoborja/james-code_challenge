@@ -1,29 +1,17 @@
 package com.example.james_code_challenge.presentation.ui
 
-import android.view.KeyEvent.ACTION_DOWN
-import android.view.accessibility.AccessibilityNodeInfo
 import androidx.activity.compose.setContent
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.runtime.Composable
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollToIndex
-import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.unit.dp
-import androidx.test.espresso.Espresso
-import androidx.test.platform.app.InstrumentationRegistry
+import com.example.james_code_challenge.data.model.Procedure
 import com.example.james_code_challenge.mock.MockData
-import com.example.james_code_challenge.mock.MockData.Companion.procedureDetailMock
-import com.example.james_code_challenge.mock.MockData.Companion.procedureMock
-import com.example.james_code_challenge.presentation.ui.MainActivity.Companion.PROCEDURE_LIST_TEST_TAG
 import com.example.james_code_challenge.presentation.ui.MainActivity.Companion.PROGRESS_ICON_TEST_TAG
-import com.example.james_code_challenge.presentation.ui.components.BottomSheet.Companion.BOTTOM_SHEET_TEST_TAG
+import com.example.james_code_challenge.presentation.ui.screens.ProceduresScreen
 import com.example.james_code_challenge.presentation.viewmodel.MainViewModel
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -56,20 +44,20 @@ class MainActivityTest {
     }
 
     @Test
-    fun testProceduresListScreen_loadingState_ShowsLoading() {
+    fun testProceduresScreen_loadingState_ShowsLoading() {
         composeTestRule.activity.setContent {
-            ProceduresListScreen(
-                uiState = MainViewModel.ProceduresListState(isLoading = true),
-                fetchProcedureDetailEvent = {})
+            ProcedureScreenUnderTest(
+                uiState = MainViewModel.ProceduresState(isLoading = true)
+            )
         }
 
         // Shows progress icon
         composeTestRule.onNodeWithTag(PROGRESS_ICON_TEST_TAG).assertIsDisplayed()
 
         composeTestRule.activity.setContent {
-            ProceduresListScreen(
-                uiState = MainViewModel.ProceduresListState(isLoading = false),
-                fetchProcedureDetailEvent = {})
+            ProcedureScreenUnderTest(
+                uiState = MainViewModel.ProceduresState(isLoading = false)
+            )
         }
 
         // Shows correct tab after swapping
@@ -77,24 +65,39 @@ class MainActivityTest {
     }
 
     @Test
-    fun testProceduresListScreen_errorState_showsCorrectText() {
+    fun testProceduresScreen_errorState_showsCorrectText() {
         composeTestRule.activity.setContent {
-            ProceduresListScreen(
-                uiState = MainViewModel.ProceduresListState(error = "notNull"),
-                fetchProcedureDetailEvent = {})
+            ProcedureScreenUnderTest(
+                uiState = MainViewModel.ProceduresState(error = "notNull")
+            )
         }
 
         // Shows progress icon
         composeTestRule.onNodeWithText(errorScreenMessage).assertIsDisplayed()
 
         composeTestRule.activity.setContent {
-            ProceduresListScreen(
-                uiState = MainViewModel.ProceduresListState(error = null),
-                fetchProcedureDetailEvent = {})
+            ProcedureScreenUnderTest(
+                uiState = MainViewModel.ProceduresState(error = null)
+            )
         }
 
         // Shows correct tab after swapping
         composeTestRule.onNodeWithTag(PROGRESS_ICON_TEST_TAG).assertIsNotDisplayed()
     }
+
+    @Composable
+    fun ProcedureScreenUnderTest(uiState: MainViewModel.ProceduresState) {
+        ProceduresScreen(
+            uiState = uiState,
+            fetchProcedureDetailEvent = {},
+            onFavouriteToggleEvent = {},
+            fetchProceduresList = {},
+            fetchFavourites = {},
+            isFavourite = { true }
+        )
+    }
+
+    // TODO missing UI test in notes
+    // TODO Skipping on FavouritesScreen UI tests, hopefully above demonstrates what I would have done
 
 }

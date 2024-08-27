@@ -1,7 +1,16 @@
 package com.example.james_code_challenge.domain.di
 
+import android.content.Context
+import androidx.room.Room
+import com.example.james_code_challenge.Constants.Companion.PROCEDURES_DATABASE
+import com.example.james_code_challenge.data.database.AppDatabase
+import com.example.james_code_challenge.data.database.dao.FavouriteItemDao
+import com.example.james_code_challenge.data.repository.FavouritesRepository
+import com.example.james_code_challenge.data.repository.FavouritesRepositoryImpl
 import com.example.james_code_challenge.data.repository.ProcedureRepository
 import com.example.james_code_challenge.data.repository.ProcedureRepositoryImpl
+import com.example.james_code_challenge.domain.usecase.FavouritesUsecase
+import com.example.james_code_challenge.domain.usecase.FavouritesUsecaseImpl
 import com.example.james_code_challenge.domain.usecase.ProcedureUsecase
 import com.example.james_code_challenge.domain.usecase.ProcedureUsecaseImpl
 import com.example.james_code_challenge.services.api.ProcedureApi
@@ -9,6 +18,7 @@ import com.example.james_code_challenge.services.api.ProcedureService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -20,6 +30,30 @@ class AppModule {
     @Singleton
     fun provideProcedureApi(): ProcedureService {
         return ProcedureApi()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppDatabase(@ApplicationContext appContext: Context): AppDatabase {
+        return Room.databaseBuilder(
+            appContext,
+            AppDatabase::class.java,
+            PROCEDURES_DATABASE
+        ).build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideFavouriteItemDao(appDatabase: AppDatabase): FavouriteItemDao {
+        return appDatabase.favoriteItemDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFavouritesRepository(
+        favouriteItemDao: FavouriteItemDao
+    ): FavouritesRepository {
+        return FavouritesRepositoryImpl(favouriteItemDao)
     }
 
     @Provides
@@ -36,6 +70,14 @@ class AppModule {
         procedureRepository: ProcedureRepository
     ): ProcedureUsecase {
         return ProcedureUsecaseImpl(procedureRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFavouritesUsecase(
+        favouriteRepository: FavouritesRepository
+    ): FavouritesUsecase {
+        return FavouritesUsecaseImpl(favouriteRepository)
     }
 
 }

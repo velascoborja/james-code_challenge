@@ -23,7 +23,11 @@ class BottomSheetKtTest {
         val correctFormattedDate = procedureDetailMocked.datePublished.toLocalDate()
         composeTestRule.setContent {
             PhaseBottomSheet(
-                procedureDetail = procedureDetailMocked
+                procedureDetail = procedureDetailMocked,
+                favouritesList = listOf(MockData.procedureMock),
+                onFavouriteToggleEvent = {},
+                updateFavourites = {},
+                isFavourite = { true }
             )
         }
 
@@ -55,7 +59,11 @@ class BottomSheetKtTest {
         val errorMessage = "Something went wrong, please try again later"
         composeTestRule.setContent {
             PhaseBottomSheet(
-                procedureDetail = null
+                procedureDetail = null,
+                favouritesList = listOf(MockData.procedureMock),
+                onFavouriteToggleEvent = {},
+                updateFavourites = {},
+                isFavourite = { true }
             )
         }
 

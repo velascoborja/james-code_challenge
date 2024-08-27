@@ -3,6 +3,8 @@
 
     <string name="generic_error_message">Something went wrong, please try again later</string>
 
+    <string name="favourites_empty_text">Your favourites is currently empty</string>
+
     <string name="procedures_tab_name">Procedures</string>
     <string name="favourites_tab_name">Favourites</string>
 

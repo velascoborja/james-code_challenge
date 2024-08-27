@@ -15,13 +15,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,12 +33,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.james_code_challenge.R
+import com.example.james_code_challenge.data.mapper.mapToProcedure
+import com.example.james_code_challenge.data.model.FavouriteItem
 import com.example.james_code_challenge.data.model.Phase
+import com.example.james_code_challenge.data.model.Procedure
 import com.example.james_code_challenge.data.model.ProcedureDetail
 import com.example.james_code_challenge.mock.MockData
 import com.example.james_code_challenge.presentation.ui.components.BottomSheet.Companion.BOTTOM_SHEET_IMAGE_GRID_TAG
 import com.example.james_code_challenge.presentation.ui.components.BottomSheet.Companion.BOTTOM_SHEET_TEST_TAG
-import com.example.james_code_challenge.presentation.ui.components.button.FavouriteButton
 import com.example.james_code_challenge.util.toLocalDate
 
 class BottomSheet {
@@ -51,8 +53,14 @@ class BottomSheet {
 @Composable
 fun PhaseBottomSheet(
     modifier: Modifier = Modifier,
-    procedureDetail: ProcedureDetail?
+    procedureDetail: ProcedureDetail?,
+    favouritesList: List<Procedure>,
+    onFavouriteToggleEvent: (FavouriteItem) -> Unit,
+    updateFavourites: () -> Unit,
+    isFavourite: (String) -> Boolean
 ) {
+    LaunchedEffect(favouritesList) {} // Trigger recomposition when favourites change
+
     if (procedureDetail == null) {
         Box(
             modifier = modifier
@@ -84,7 +92,21 @@ fun PhaseBottomSheet(
         ) {
             Text(text = procedureDetail.name, fontWeight = FontWeight.Bold)
             Spacer(modifier.weight(1f))
-            FavouriteButton()
+            FavouriteButton(
+                onClickEvent = {
+                    onFavouriteToggleEvent(
+                        FavouriteItem(
+                            procedureDetail.uuid,
+                            procedureDetail.mapToProcedure()
+                        )
+                    )
+                    updateFavourites()
+                },
+                currentItemUuid = procedureDetail.uuid,
+                favouritesList = favouritesList,
+                isFavourite = { isFavourite(procedureDetail.uuid) }
+//                isFavourite = { isFavourite(procedureDetail.uuid, favouritesList) }
+            ) // TODO JIMMY
         }
         Text(text = stringResource(id = R.string.total_duration, procedureDetail.duration))
         Text(
@@ -112,7 +134,7 @@ fun PhaseImageGrid(phaseData: List<Phase>, modifier: Modifier = Modifier) {
             .testTag(BOTTOM_SHEET_IMAGE_GRID_TAG)
     ) {
         itemsIndexed(phaseData) { _, item ->
-            ImageCard(modifier, item.icon.url, item.name)
+            ImageCard(modifier, item.icon.iconUrl, item.name)
         }
     }
 }
@@ -142,13 +164,13 @@ fun ImageCard(modifier: Modifier = Modifier, imageUrl: String, title: String) {
 }
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun PhaseImageGridPreview() {
     PhaseImageGrid(phaseData = MockData.procedureDetailMock.phases)
 }
 
 // Previewing ModalBottomSheet appears bugged
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview(showBackground = true)
 fun PhaseBottomSheetPreview() {
@@ -160,7 +182,13 @@ fun PhaseBottomSheetPreview() {
         Column(
             modifier = Modifier.padding(vertical = 100.dp)
         ) {
-            PhaseBottomSheet(procedureDetail = MockData.procedureDetailMock)
+            PhaseBottomSheet(
+                procedureDetail = MockData.procedureDetailMock,
+                favouritesList = listOf(),
+                onFavouriteToggleEvent = {},
+                updateFavourites = {},
+                isFavourite = { true }
+            )
         }
     }
 }

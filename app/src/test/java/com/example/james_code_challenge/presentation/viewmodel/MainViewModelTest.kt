@@ -1,5 +1,6 @@
 package com.example.james_code_challenge.presentation.viewmodel
 
+import com.example.james_code_challenge.domain.usecase.FavouritesUsecase
 import com.example.james_code_challenge.domain.usecase.ProcedureUsecase
 import com.example.james_code_challenge.mock.MockData
 import com.example.james_code_challenge.util.Result
@@ -26,6 +27,7 @@ import org.junit.Test
 class MainViewModelTest {
 
     private val procedureUsecaseMock = mockk<ProcedureUsecase>(relaxed = true)
+    private val favouritesUsecaseMock = mockk<FavouritesUsecase>(relaxed = true)
 
     private lateinit var viewModel: MainViewModel
 
@@ -34,7 +36,10 @@ class MainViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = MainViewModel(procedureUsecaseMock)
+        viewModel = MainViewModel(
+            procedureUsecase = procedureUsecaseMock,
+            favouritesUsecase = favouritesUsecaseMock
+        )
     }
 
     @After
@@ -59,9 +64,9 @@ class MainViewModelTest {
 
             // then
             coVerify { procedureUsecaseMock.getProcedureList() }
-            assertEquals(viewModel.uiState.value.items, expectedProcedures)
-            assertFalse(viewModel.uiState.value.isLoading)
-            assertNull(viewModel.uiState.value.error)
+            assertEquals(viewModel.proceduresState.value.items, expectedProcedures)
+            assertFalse(viewModel.proceduresState.value.isLoading)
+            assertNull(viewModel.proceduresState.value.error)
         }
 
     @Test
@@ -80,9 +85,9 @@ class MainViewModelTest {
 
             // then
             coVerify { procedureUsecaseMock.getProcedureList() }
-            assertEquals(viewModel.uiState.value.error, exception.toString())
-            assertFalse(viewModel.uiState.value.isLoading)
-            assertNotNull(viewModel.uiState.value.error)
+            assertEquals(viewModel.proceduresState.value.error, exception.toString())
+            assertFalse(viewModel.proceduresState.value.isLoading)
+            assertNotNull(viewModel.proceduresState.value.error)
         }
 
     @Test
@@ -101,9 +106,9 @@ class MainViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // then
-        assertEquals(viewModel.uiState.value.selectedProcedureDetail, expectedProcedureDetail)
+        assertEquals(viewModel.proceduresState.value.selectedProcedureDetail, expectedProcedureDetail)
         coVerify { procedureUsecaseMock.getProcedureDetail(procedureId) }
-        assertFalse(viewModel.uiState.value.isLoading)
+        assertFalse(viewModel.proceduresState.value.isLoading)
     }
 
     @Test
@@ -124,7 +129,7 @@ class MainViewModelTest {
 
             // then
             coVerify { procedureUsecaseMock.getProcedureDetail(procedureId) }
-            assertNull(viewModel.uiState.value.selectedProcedureDetail)
-            assertFalse(viewModel.uiState.value.isLoading)
+            assertNull(viewModel.proceduresState.value.selectedProcedureDetail)
+            assertFalse(viewModel.proceduresState.value.isLoading)
         }
 }

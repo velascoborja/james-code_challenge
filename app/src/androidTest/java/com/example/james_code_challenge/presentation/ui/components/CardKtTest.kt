@@ -1,6 +1,5 @@
 package com.example.james_code_challenge.presentation.ui.components
 
-import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -20,7 +19,10 @@ class CardKtTest {
         composeTestRule.setContent {
             ProcedureDetailCard(
                 procedure = MockData.procedureMock,
-                onClickEvent = { }
+                favouritesList = listOf(MockData.procedureMock),
+                onCardClickEvent = {},
+                onFavouriteToggleEvent = {},
+                isFavourite = { true }
             )
         }
 

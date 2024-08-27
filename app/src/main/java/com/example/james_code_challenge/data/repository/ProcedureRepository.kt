@@ -17,7 +17,7 @@ class ProcedureRepositoryImpl @Inject constructor(
         try {
             val response = procedureApi.getProcedureList()
             if (response.isSuccessful) {
-                emit(Result.Success(response.body()!!)) // NPEs are caught
+                 emit(Result.Success(response.body()!!)) // NPEs are caught
             } else {
                 emit(Result.Error(Throwable("API Error: ${response.code()}. ${response.errorBody()}")))
             }

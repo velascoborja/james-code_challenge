@@ -4,5 +4,7 @@ class Constants {
     companion object {
         const val PROCEDURES_SCREEN = "procedures_route"
         const val FAVOURITES_SCREEN = "favourites_route"
+
+        const val PROCEDURES_DATABASE = "procedures_app_database"
     }
 }
