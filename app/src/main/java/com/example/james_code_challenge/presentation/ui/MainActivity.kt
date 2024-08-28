@@ -39,27 +39,25 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ProceduresApp() {
     val viewModel = hiltViewModel<MainViewModel>()
-    val procedureUiState by viewModel.proceduresState.collectAsStateWithLifecycle()
-    val favouritesUiState by viewModel.favouritesState.collectAsStateWithLifecycle()
+    val proceduresUiState by viewModel.proceduresState.collectAsStateWithLifecycle()
 
     ProceduresScaffold(
         procedureScreen = {
             ProceduresScreen(
-                uiState = procedureUiState,
+                uiState = proceduresUiState,
                 fetchProcedureDetailEvent = { viewModel.fetchProcedureDetail(it) },
                 onFavouriteToggleEvent = {
                     viewModel.toggleFavouriteItem(
                         it
                     )
                 },
-                fetchProceduresList = { viewModel.fetchProcedureList() },
-                fetchFavourites = { viewModel.fetchFavouriteList() },
+                fetchProceduresAndFavourites = { viewModel.fetchProceduresAndFavourites() },
                 isFavourite = { viewModel.isFavourite(it) }
             )
         },
         favouritesScreen = {
             FavouritesScreen(
-                uiState = favouritesUiState,
+                uiState = proceduresUiState,
                 onFavouriteToggleEvent = {
                     viewModel.toggleFavouriteItem(
                         it
@@ -94,15 +92,14 @@ fun ProcedureAppPreview() {
                 ),
                 fetchProcedureDetailEvent = {},
                 onFavouriteToggleEvent = {},
-                fetchProceduresList = {},
-                fetchFavourites = {},
+                fetchProceduresAndFavourites = {},
                 isFavourite = { true }
             )
         },
         favouritesScreen = {
             FavouritesScreen(
-                uiState = MainViewModel.FavouritesState(
-                    listOf(
+                uiState = MainViewModel.ProceduresState(
+                    items = listOf(
                         MockData.procedureMock,
                         MockData.procedureMock.copy(uuid = "1"),
                         MockData.procedureMock.copy(uuid = "2"),

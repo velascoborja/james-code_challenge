@@ -1,5 +1,6 @@
 package com.example.james_code_challenge.domain.usecase
 
+import androidx.room.Transaction
 import com.example.james_code_challenge.data.model.FavouriteItem
 import com.example.james_code_challenge.data.repository.FavouritesRepository
 import kotlinx.coroutines.flow.Flow
@@ -10,6 +11,7 @@ class FavouritesUsecaseImpl @Inject constructor(
     private val repository: FavouritesRepository
 ) : FavouritesUsecase {
 
+    @Transaction // Ensures atomic execution
     override suspend fun toggleFavourite(favouriteItem: FavouriteItem) {
         if (isFavourite(favouriteItem.uuid)) {
             repository.deleteFavoriteItem(favouriteItem.uuid)

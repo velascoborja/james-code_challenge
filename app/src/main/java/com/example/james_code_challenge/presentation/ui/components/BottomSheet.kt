@@ -56,7 +56,6 @@ fun PhaseBottomSheet(
     procedureDetail: ProcedureDetail?,
     favouritesList: List<Procedure>,
     onFavouriteToggleEvent: (FavouriteItem) -> Unit,
-    updateFavourites: () -> Unit,
     isFavourite: (String) -> Boolean
 ) {
     LaunchedEffect(favouritesList) {} // Trigger recomposition when favourites change
@@ -100,13 +99,11 @@ fun PhaseBottomSheet(
                             procedureDetail.mapToProcedure()
                         )
                     )
-                    updateFavourites()
                 },
                 currentItemUuid = procedureDetail.uuid,
                 favouritesList = favouritesList,
                 isFavourite = { isFavourite(procedureDetail.uuid) }
-//                isFavourite = { isFavourite(procedureDetail.uuid, favouritesList) }
-            ) // TODO JIMMY
+            )
         }
         Text(text = stringResource(id = R.string.total_duration, procedureDetail.duration))
         Text(
@@ -186,7 +183,6 @@ fun PhaseBottomSheetPreview() {
                 procedureDetail = MockData.procedureDetailMock,
                 favouritesList = listOf(),
                 onFavouriteToggleEvent = {},
-                updateFavourites = {},
                 isFavourite = { true }
             )
         }

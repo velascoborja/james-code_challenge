@@ -2,7 +2,6 @@ package com.example.james_code_challenge.data.repository
 
 import com.example.james_code_challenge.data.database.dao.FavouriteItemDao
 import com.example.james_code_challenge.data.model.FavouriteItem
-import com.example.james_code_challenge.data.model.Procedure
 import javax.inject.Inject
 
 class FavouritesRepositoryImpl @Inject constructor(
@@ -18,7 +17,7 @@ class FavouritesRepositoryImpl @Inject constructor(
         return favouriteItemDao.isFavourite(uuid)
     }
 
-    override suspend fun getAllFavoriteItems(): List<FavouriteItem> { // TODO JIMMY so save actual procedure but have it empty..? FIRST AIM is to get basics working, then get better
+    override suspend fun getAllFavoriteItems(): List<FavouriteItem> {
         return favouriteItemDao.getAllFavoriteItems()
     }
 

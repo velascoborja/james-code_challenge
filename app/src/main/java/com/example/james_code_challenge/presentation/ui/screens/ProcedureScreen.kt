@@ -33,6 +33,11 @@ import com.example.james_code_challenge.presentation.ui.components.PhaseBottomSh
 import com.example.james_code_challenge.presentation.ui.components.ProcedureDetailCard
 import com.example.james_code_challenge.presentation.viewmodel.MainViewModel
 
+/***
+ * Procedures screen which shows all available procedures, but highlights favourited items
+ * TODO explain all params
+ *
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProceduresScreen(
@@ -41,8 +46,7 @@ fun ProceduresScreen(
     fetchProcedureDetailEvent: (String) -> Unit,
     showBottomSheet: Boolean = false,
     onFavouriteToggleEvent: (FavouriteItem) -> Unit,
-    fetchProceduresList: () -> Unit,
-    fetchFavourites: () -> Unit,
+    fetchProceduresAndFavourites: () -> Unit,
     isFavourite: (String) -> Boolean
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -52,7 +56,7 @@ fun ProceduresScreen(
     if (!isFetchingProcedures) { // Without this, fetchProceduresList() is called after every recomposition, causing erratic effects
         LaunchedEffect(Unit) {
             isFetchingProcedures = true
-            fetchProceduresList()
+            fetchProceduresAndFavourites()
             isFetchingProcedures = false
         }
     }
@@ -67,7 +71,7 @@ fun ProceduresScreen(
                 modifier = modifier.fillMaxHeight(1.0f),
                 onDismissRequest = {
                     showBottomSheetState = false
-                    fetchFavourites()
+//                    fetchFavourites()
                 },
                 sheetState = sheetState
             ) {
@@ -79,7 +83,6 @@ fun ProceduresScreen(
                         procedureDetail = selectedProcedure,
                         favouritesList = uiState.favouriteItems,
                         onFavouriteToggleEvent = { onFavouriteToggleEvent(it) },
-                        updateFavourites = { fetchFavourites() },
                         isFavourite = { selectedProcedure?.uuid?.let { isFavourite(it) } ?: false }
                     )
                 }
@@ -105,7 +108,6 @@ fun ProceduresScreen(
                 onShowBottomSheetEvent = { showBottomSheetState = true },
                 onFetchProcedureDetailEvent = { fetchProcedureDetailEvent(it) },
                 onFavouriteToggleEvent = { onFavouriteToggleEvent(it) },
-                fetchFavourites = { fetchFavourites() },
                 isFavourite = { isFavourite(it) }
             )
         }
@@ -119,9 +121,11 @@ fun ProceduresList(
     onShowBottomSheetEvent: () -> Unit,
     onFetchProcedureDetailEvent: (String) -> Unit,
     onFavouriteToggleEvent: (FavouriteItem) -> Unit,
-    fetchFavourites: () -> Unit,
     isFavourite: (String) -> Boolean
 ) {
+    val latestFavourites = remember(uiState.favouriteItems) {
+        uiState.favouriteItems
+    }
     LaunchedEffect(uiState.favouriteItems) {} // Trigger recomposition when favourites change
 
     LazyColumn(
@@ -135,11 +139,10 @@ fun ProceduresList(
         ) { procedure ->
             ProcedureDetailCard(
                 procedure = procedure,
-                favouritesList = uiState.favouriteItems,
+                favouritesList = latestFavourites,
                 onCardClickEvent = {
                     onShowBottomSheetEvent()
                     onFetchProcedureDetailEvent(procedure.uuid)
-                    fetchFavourites()
                 },
                 onFavouriteToggleEvent = { onFavouriteToggleEvent(it) },
                 isFavourite = { isFavourite(procedure.uuid) }
@@ -163,8 +166,7 @@ fun ProcedureListScreenPreview() {
         ),
         fetchProcedureDetailEvent = {},
         onFavouriteToggleEvent = {},
-        fetchProceduresList = {},
-        fetchFavourites = {},
+        fetchProceduresAndFavourites = {},
         isFavourite = { true }
     )
 }

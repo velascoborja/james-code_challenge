@@ -8,7 +8,6 @@ import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import com.example.james_code_challenge.data.model.Procedure
 import com.example.james_code_challenge.mock.MockData
 import com.example.james_code_challenge.presentation.ui.MainActivity.Companion.PROGRESS_ICON_TEST_TAG
 import com.example.james_code_challenge.presentation.ui.screens.ProceduresScreen
@@ -91,13 +90,12 @@ class MainActivityTest {
             uiState = uiState,
             fetchProcedureDetailEvent = {},
             onFavouriteToggleEvent = {},
-            fetchProceduresList = {},
+            fetchProceduresAndFavourites = {},
             fetchFavourites = {},
             isFavourite = { true }
         )
     }
 
-    // TODO missing UI test in notes
-    // TODO Skipping on FavouritesScreen UI tests, hopefully above demonstrates what I would have done
+    // Skipping on FavouritesScreen UI tests, hopefully above demonstrates what I would have done
 
 }

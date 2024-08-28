@@ -31,15 +31,20 @@ import com.example.james_code_challenge.presentation.ui.components.PhaseBottomSh
 import com.example.james_code_challenge.presentation.ui.components.ProcedureDetailCard
 import com.example.james_code_challenge.presentation.viewmodel.MainViewModel
 
+/***
+ * Favourites screen which shows just the users' favourited procedures
+ * TODO explain all params
+ *
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavouritesScreen(
     modifier: Modifier = Modifier,
-    uiState: MainViewModel.FavouritesState,
+    uiState: MainViewModel.ProceduresState,
+    fetchFavourites: () -> Unit,
     showBottomSheet: Boolean = false,
     onFavouriteToggleEvent: (FavouriteItem) -> Unit,
     onFetchProcedureDetailEvent: (String) -> Unit,
-    fetchFavourites: () -> Unit,
     isFavourite: (String) -> Boolean
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -74,7 +79,6 @@ fun FavouritesScreen(
                         procedureDetail = uiState.selectedProcedureDetail,
                         favouritesList = uiState.items,
                         onFavouriteToggleEvent = { onFavouriteToggleEvent(it) },
-                        updateFavourites = { fetchFavourites() },
                         isFavourite = { isFavourite(it) }
                     )
                 }
@@ -89,10 +93,10 @@ fun FavouritesScreen(
             )
         } else {
             FavouritesList(
+                uiState = uiState,
                 onShowBottomSheetEvent = { showBottomSheetState = true },
                 onFetchProcedureDetailEvent = { onFetchProcedureDetailEvent(it) },
                 onFavouriteToggleEvent = { onFavouriteToggleEvent(it) },
-                uiState = uiState,
                 isFavourite = { isFavourite(it) }
             )
         }
@@ -102,13 +106,16 @@ fun FavouritesScreen(
 @Composable
 fun FavouritesList(
     modifier: Modifier = Modifier,
-    uiState: MainViewModel.FavouritesState,
+    uiState: MainViewModel.ProceduresState,
     onShowBottomSheetEvent: () -> Unit,
     onFetchProcedureDetailEvent: (String) -> Unit,
     onFavouriteToggleEvent: (FavouriteItem) -> Unit,
     isFavourite: (String) -> Boolean
 ) {
-    LaunchedEffect(uiState.items) {} // Trigger recomposition when favourites change
+    val latestFavourites = remember(uiState.favouriteItems) {
+        uiState.favouriteItems
+    }
+    LaunchedEffect(uiState.favouriteItems) {}
 
     LazyColumn(
         modifier = modifier
@@ -116,12 +123,12 @@ fun FavouritesList(
             .testTag(FAVOURITES_TEST_TAG)
     ) {
         items(
-            items = uiState.items,
+            items = latestFavourites,
             key = { it.uuid }
         ) { procedure ->
             ProcedureDetailCard(
                 procedure = procedure,
-                favouritesList = uiState.items,
+                favouritesList = latestFavourites,
                 onCardClickEvent = {
                     onShowBottomSheetEvent()
                     onFetchProcedureDetailEvent(procedure.uuid)
@@ -139,8 +146,8 @@ fun FavouritesList(
 @Preview(showBackground = true)
 fun FavouritesScreenPreview() {
     FavouritesScreen(
-        uiState = MainViewModel.FavouritesState(
-            listOf(
+        uiState = MainViewModel.ProceduresState(
+            items = listOf(
                 MockData.procedureMock,
                 MockData.procedureMock.copy(uuid = "1"),
                 MockData.procedureMock.copy(uuid = "2"),
@@ -148,10 +155,9 @@ fun FavouritesScreenPreview() {
                 MockData.procedureMock.copy(uuid = "4")
             )
         ),
-        onFavouriteToggleEvent = {},
         fetchFavourites = {},
+        onFavouriteToggleEvent = {},
         onFetchProcedureDetailEvent = {},
         isFavourite = { true }
     )
 }
-

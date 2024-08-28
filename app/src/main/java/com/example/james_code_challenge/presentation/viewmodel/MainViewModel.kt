@@ -12,6 +12,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,29 +26,29 @@ class MainViewModel @Inject constructor(
     private val _proceduresState = MutableStateFlow(ProceduresState())
     val proceduresState: StateFlow<ProceduresState> = _proceduresState.asStateFlow()
 
-    private val _favouritesState = MutableStateFlow(FavouritesState())
-    val favouritesState: StateFlow<FavouritesState> = _favouritesState.asStateFlow()
-
-    fun fetchProcedureList() {
+    fun fetchProceduresAndFavourites() {
         viewModelScope.launch {
             _proceduresState.emit(_proceduresState.value.copy(isLoading = true))
 
-            fetchFavouriteList()
-            procedureUsecase.getProcedureList().collect {
-                when (it) {
-                    is Result.Success -> onProcedureListSuccess(it.data)
-                    is Result.Error -> onProcedureListFailure(it.exception)
+            val procedures = procedureUsecase.getProcedureList()
+            val favourites = favouritesUsecase.getAllFavoriteItems()
+
+            combine(procedures, favourites) { proceduresCall, favouriteItems ->
+                when(proceduresCall) { // Perhaps not the best idea to rely on the success of just API call here, but for sake of this technical
+                    is Result.Success -> onProcedureListSuccess(proceduresCall.data, favouriteItems)
+                    is Result.Error -> onProcedureListFailure(proceduresCall.exception)
                 }
-            }
+            }.launchIn(viewModelScope)
         }
     }
 
-    private fun onProcedureListSuccess(procedureList: List<Procedure>) {
+    private fun onProcedureListSuccess(procedureList: List<Procedure>, favouriteItems: List<FavouriteItem>) {
         viewModelScope.launch {
             _proceduresState.emit(
                 _proceduresState.value.copy(
                     isLoading = false,
-                    items = procedureList
+                    items = procedureList,
+                    favouriteItems = favouriteItems.map { it.procedure }
                 )
             )
         }
@@ -82,11 +84,6 @@ class MainViewModel @Inject constructor(
                     selectedProcedureDetail = procedureDetail
                 )
             )
-            _favouritesState.emit(
-                _favouritesState.value.copy(
-                    selectedProcedureDetail = procedureDetail
-                )
-            )
         }
     }
 
@@ -104,21 +101,28 @@ class MainViewModel @Inject constructor(
     fun toggleFavouriteItem(favouriteItem: FavouriteItem) {
         viewModelScope.launch {
             favouritesUsecase.toggleFavourite(favouriteItem)
+
+            // Emit event with latest list of favourites for use in DB
+            viewModelScope.launch {
+                favouritesUsecase.getAllFavoriteItems().collect { fav ->
+                    _proceduresState.emit(
+                        _proceduresState.value.copy(
+                            favouriteItems = fav.map { it.procedure }
+                        )
+                    )
+                }
+            }
         }
     }
 
     fun fetchFavouriteList() {
         viewModelScope.launch {
             favouritesUsecase.getAllFavoriteItems().collect { favouritesList ->
-                val procedures = favouritesList.map { it.procedure }
-                _favouritesState.emit(
-                    _favouritesState.value.copy(
-                        items = procedures
-                    )
-                )
-                _proceduresState.emit( // Pass copy of current favourites to modify state of favourite button
+                val favouriteProcedures = favouritesList.map { it.procedure }
+                _proceduresState.emit(
                     _proceduresState.value.copy(
-                        favouriteItems = procedures
+                        items = favouriteProcedures,
+                        favouriteItems = favouriteProcedures,
                     )
                 )
             }
@@ -127,7 +131,6 @@ class MainViewModel @Inject constructor(
 
     fun isFavourite(currentUuid: String): Boolean {
         val currentFavourites: List<String> = proceduresState.value.favouriteItems.map { it.uuid }
-        println("JIMMY CURRENT FAVOURITES -> $currentFavourites")
         return currentFavourites.contains(currentUuid)
     }
 
@@ -141,6 +144,7 @@ class MainViewModel @Inject constructor(
 
     data class FavouritesState(
         val items: List<Procedure> = emptyList(),
+        val favouriteItems: List<Procedure> = emptyList(),
         var selectedProcedureDetail: ProcedureDetail? = null
     )
 

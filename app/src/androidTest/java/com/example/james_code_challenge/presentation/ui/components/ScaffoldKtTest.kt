@@ -33,8 +33,7 @@ class ScaffoldKtTest {
                         uiState = MainViewModel.ProceduresState(items = listOf(MockData.procedureMock)),
                         fetchProcedureDetailEvent = {},
                         onFavouriteToggleEvent = {},
-                        fetchProceduresList = {},
-                        fetchFavourites = {},
+                        fetchProceduresAndFavourites = {},
                         isFavourite = { true }
                     )
                 },
