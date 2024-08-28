@@ -19,9 +19,13 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,6 +46,7 @@ import com.example.james_code_challenge.mock.MockData
 import com.example.james_code_challenge.presentation.ui.components.BottomSheet.Companion.BOTTOM_SHEET_IMAGE_GRID_TAG
 import com.example.james_code_challenge.presentation.ui.components.BottomSheet.Companion.BOTTOM_SHEET_TEST_TAG
 import com.example.james_code_challenge.util.toLocalDate
+import kotlinx.coroutines.launch
 
 class BottomSheet {
     companion object {
@@ -59,6 +64,12 @@ fun PhaseBottomSheet(
     isFavourite: (String) -> Boolean
 ) {
     LaunchedEffect(favouritesList) {} // Trigger recomposition when favourites change
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val snackScope = rememberCoroutineScope()
+
+    val favourited = stringResource(R.string.snackbar_favourited)
+    val unfavourited = stringResource(R.string.snackbar_unfavourited)
 
     if (procedureDetail == null) {
         Box(
@@ -99,6 +110,11 @@ fun PhaseBottomSheet(
                             procedureDetail.mapToProcedure()
                         )
                     )
+                    snackScope.launch {
+                        snackbarHostState.showSnackbar(
+                            if (isFavourite(procedureDetail.uuid)) unfavourited else favourited
+                        )
+                    }
                 },
                 currentItemUuid = procedureDetail.uuid,
                 favouritesList = favouritesList,
@@ -120,6 +136,7 @@ fun PhaseBottomSheet(
                 phaseData = procedureDetail.phases
             )
         }
+        SnackbarHost(hostState = snackbarHostState)
     }
 }
 

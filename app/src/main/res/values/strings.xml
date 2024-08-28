@@ -11,4 +11,7 @@
     <string name="total_duration">Total duration: %s minutes</string>
     <string name="creation_date">Creation date: %s</string>
 
+    <string name="snackbar_unfavourited">Procedure unfavourited!</string>
+    <string name="snackbar_favourited">Procedure favourited!</string>
+
 </resources>

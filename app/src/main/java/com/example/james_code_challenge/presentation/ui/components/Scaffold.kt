@@ -2,7 +2,10 @@ package com.example.james_code_challenge.presentation.ui.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
@@ -17,12 +20,16 @@ import com.example.james_code_challenge.presentation.navigation.BottomNavigation
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ProceduresScaffold(
+    snackbarHostState: SnackbarHostState,
     procedureScreen: @Composable () -> Unit,
     favouritesScreen: @Composable () -> Unit
 ) {
     val navController = rememberNavController()
 
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         bottomBar = { BottomNavigation(navController = navController) }
     ) { innerPadding ->
         NavHost(
