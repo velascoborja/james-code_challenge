@@ -6,5 +6,7 @@ class Constants {
         const val FAVOURITES_SCREEN = "favourites_route"
 
         const val PROCEDURES_DATABASE = "procedures_app_database"
+
+        const val BASE_URL = "https://staging.touchsurgery.com/api/v3/"
     }
 }

@@ -14,4 +14,5 @@
     <string name="snackbar_unfavourited">Procedure unfavourited!</string>
     <string name="snackbar_favourited">Procedure favourited!</string>
 
+    <string name="user_offline">Unable to establish connection. Using offline data</string>
 </resources>

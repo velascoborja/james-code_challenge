@@ -10,8 +10,7 @@ data class Procedure(
     @Embedded val phases: List<String>,
     @SerializedName("date_published") val datePublished: String,
     val duration: Int
-) {
-}
+)
 
 data class Icon(
     @SerializedName("uuid") val iconUuid: String,

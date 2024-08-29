@@ -12,6 +12,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -54,6 +56,7 @@ fun ProceduresScreen(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showBottomSheetState by remember { mutableStateOf(showBottomSheet) }
     var isFetchingProcedures by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     if (!isFetchingProcedures) { // Without this, fetchProceduresList() is called after every recomposition, causing erratic effects
         LaunchedEffect(Unit) {
@@ -113,6 +116,17 @@ fun ProceduresScreen(
                 onFavouriteToggleEvent = { onFavouriteToggleEvent(it) },
                 isFavourite = { isFavourite(it) }
             )
+
+            // Offline snackbar
+            if (uiState.isOffline) {
+                val userOffline = stringResource(R.string.user_offline)
+                LaunchedEffect(uiState.isOffline) {
+                    snackbarHostState.showSnackbar(
+                        userOffline
+                    )
+                }
+                SnackbarHost(hostState = snackbarHostState)
+            }
         }
     }
 }
